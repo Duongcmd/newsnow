@@ -124,6 +124,7 @@ Contributions are welcome! Feel free to submit pull requests or create issues fo
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines on how to contribute, especially for adding new data sources.
 # 🎯 Hướng Dẫn Cập Nhật Nguồn Tin và Chuyên Mục trong NewsNow
+https://newsnow-ixevfvfys-duongcmds-projects.vercel.app
 
 ## 📁 **File Cấu Hình Chính**
 
