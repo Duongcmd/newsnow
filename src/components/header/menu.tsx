@@ -6,7 +6,7 @@ import { motion } from "framer-motion"
 //     <li onClick={toggleDark} className="cursor-pointer [&_*]:cursor-pointer transition-all">
 //       <span className={$("inline-block", isDark ? "i-ph-moon-stars-duotone" : "i-ph-sun-dim-duotone")} />
 //       <span>
-//         {isDark ? "浅色模式" : "深色模式"}
+//         {isDark ? "Chế độ sáng" : "Chế độ tối"}
 //       </span>
 //     </li>
 //   )
@@ -55,26 +55,26 @@ export function Menu() {
                 ? (
                     <li onClick={logout}>
                       <span className="i-ph:sign-out-duotone inline-block" />
-                      <span>退出登录</span>
+                      <span>Đăng xuất</span>
                     </li>
                   )
                 : (
                     <li onClick={login}>
                       <span className="i-ph:sign-in-duotone inline-block" />
-                      <span>Github 账号登录</span>
+                      <span>Đăng nhập bằng GitHub</span>
                     </li>
                   ))}
               {/* <ThemeToggle /> */}
               <li onClick={() => window.open(Homepage)} className="cursor-pointer [&_*]:cursor-pointer transition-all">
                 <span className="i-ph:github-logo-duotone inline-block" />
-                <span>Star on Github </span>
+                <span>Đánh dấu sao trên GitHub </span>
               </li>
               <li className="flex gap-2 items-center">
                 <a
                   href="https://github.com/ourongxing/newsnow"
                 >
                   <img
-                    alt="GitHub stars badge"
+                    alt="Số sao GitHub"
                     src="https://img.shields.io/github/stars/ourongxing/newsnow?logo=github&style=flat&labelColor=%235e3c40&color=%23614447"
                   />
                 </a>
@@ -82,7 +82,7 @@ export function Menu() {
                   href="https://github.com/ourongxing/newsnow/fork"
                 >
                   <img
-                    alt="GitHub forks badge"
+                    alt="Số bản fork GitHub"
                     src="https://img.shields.io/github/forks/ourongxing/newsnow?logo=github&style=flat&labelColor=%235e3c40&color=%23614447"
                   />
                 </a>

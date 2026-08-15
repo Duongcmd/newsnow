@@ -10,7 +10,7 @@ function GoTop() {
   return (
     <button
       type="button"
-      title="Go To Top"
+      title="Về đầu trang"
       className={$("i-ph:arrow-fat-up-duotone", ok ? "op-50 btn" : "op-0")}
       onClick={goToTop}
     />
@@ -19,7 +19,7 @@ function GoTop() {
 
 function Github() {
   return (
-    <button type="button" title="Github" className="i-ph:github-logo-duotone btn" onClick={() => window.open(Homepage)} />
+    <button type="button" title="Mở GitHub" className="i-ph:github-logo-duotone btn" onClick={() => window.open(Homepage)} />
   )
 }
 
@@ -38,7 +38,7 @@ function Refresh() {
   return (
     <button
       type="button"
-      title="Refresh"
+      title="Làm mới"
       className={$("i-ph:arrow-counter-clockwise-duotone btn", isFetching && "animate-spin i-ph:circle-dashed-duotone")}
       onClick={refreshAll}
     />
@@ -50,7 +50,7 @@ export function Header() {
     <>
       <span className="flex justify-self-start">
         <Link to="/" className="flex gap-2 items-center">
-          <div className="h-10 w-10 bg-cover" title="logo" style={{ backgroundImage: "url(/icon.svg)" }} />
+          <div className="h-10 w-10 bg-cover" title="Logo NewsNow" style={{ backgroundImage: "url(/icon.svg)" }} />
           <span className="text-2xl font-brand line-height-none!">
             <p>News</p>
             <p className="mt--1">

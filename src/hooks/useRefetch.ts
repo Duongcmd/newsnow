@@ -10,10 +10,10 @@ export function useRefetch() {
    */
   const refresh = useCallback((...sources: SourceID[]) => {
     if (enableLogin && !loggedIn) {
-      toaster("登录后可以强制拉取最新数据", {
+      toaster("Đăng nhập để buộc tải dữ liệu mới nhất", {
         type: "warning",
         action: {
-          label: "登录",
+          label: "Đăng nhập",
           onClick: login,
         },
       })

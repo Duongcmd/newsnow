@@ -172,9 +172,9 @@ function NewsCard({ id, setHandleRef }: NewsCardProps) {
 
 function UpdatedTime({ isError, updatedTime }: { updatedTime: any, isError: boolean }) {
   const relativeTime = useRelativeTime(updatedTime ?? "")
-  if (relativeTime) return `${relativeTime}更新`
-  if (isError) return "获取失败"
-  return "加载中..."
+  if (relativeTime) return `Cập nhật ${relativeTime}`
+  if (isError) return "Không thể tải dữ liệu"
+  return "Đang tải..."
 }
 
 function DiffNumber({ diff }: { diff: number }) {

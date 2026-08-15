@@ -48,10 +48,10 @@ export function useSync() {
         await uploadMetadata(primitiveMetadata)
       } catch (e: any) {
         if (e.statusCode !== 506) {
-          toaster("身份校验失败，无法同步，请重新登录", {
+          toaster("Xác thực thất bại, không thể đồng bộ. Vui lòng đăng nhập lại.", {
             type: "error",
             action: {
-              label: "登录",
+              label: "Đăng nhập",
               onClick: login,
             },
           })
@@ -73,10 +73,10 @@ export function useSync() {
         }
       } catch (e: any) {
         if (e.statusCode !== 506) {
-          toaster("身份校验失败，无法同步，请重新登录", {
+          toaster("Xác thực thất bại, không thể đồng bộ. Vui lòng đăng nhập lại.", {
             type: "error",
             action: {
-              label: "登录",
+              label: "Đăng nhập",
               onClick: login,
             },
           })

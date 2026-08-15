@@ -5,6 +5,137 @@ English | [简体中文](README.zh-CN.md) | [日本語](README.ja-JP.md)
 > [!NOTE]
 > This is a demo version currently supporting Chinese only. A full-featured version with better customization and English content support will be released later.
 
+## Hướng dẫn chạy bản giao diện tiếng Việt
+
+Phần giao diện tiếng Việt đã được triển khai trong các component React, metadata danh mục, thông báo hệ thống, định dạng thời gian và metadata HTML. Các tiêu đề bài viết vẫn do từng nguồn tin cung cấp, vì vậy ngôn ngữ nội dung có thể khác nhau tùy nguồn.
+
+### Yêu cầu môi trường
+
+Dự án yêu cầu **Node.js 20 trở lên** và **pnpm 10**. Có thể bật Corepack để pnpm được quản lý theo dự án:
+
+```sh
+corepack enable
+corepack prepare pnpm@10.14.0 --activate
+```
+
+### Cài đặt và chạy development
+
+```sh
+git clone https://github.com/Duongcmd/newsnow.git
+cd newsnow
+pnpm install --frozen-lockfile
+cp example.env.server .env.server
+pnpm dev
+```
+
+Sau khi Vite khởi động, mở URL được in trong terminal, thường là `http://localhost:5173`. Lệnh `pnpm dev` tự động chạy bước `presource` trước để tạo lại các tệp nguồn sinh như `shared/sources.json` và `shared/pinyin.json`.
+
+Nếu chỉ chạy bản đọc tin không cần đăng nhập GitHub, có thể giữ các giá trị xác thực trống trong `.env.server`. Khi cần đồng bộ tài khoản, hãy cấu hình `G_CLIENT_SECRET` và `JWT_SECRET` theo thiết lập GitHub OAuth của môi trường triển khai. `INIT_TABLE=true` chỉ nên dùng trong lần khởi tạo cơ sở dữ liệu đầu tiên; sau đó có thể chuyển thành `false`.
+
+### Build và chạy production local
+
+```sh
+pnpm build
+pnpm start
+```
+
+Bản build frontend được tạo ở `dist/output/public`; server production được tạo ở `dist/output/server/index.mjs`. Có thể dùng `pnpm preview` để chạy mô phỏng Cloudflare Pages, nhưng lệnh này cần Wrangler và cấu hình Pages phù hợp.
+
+### Kiểm tra chất lượng mã nguồn
+
+```sh
+pnpm lint
+pnpm typecheck
+pnpm test
+```
+
+`pnpm typecheck` chạy riêng hai cấu hình `tsconfig.node.json` cho server/shared/generated types và `tsconfig.app.json` cho frontend. Ở trạng thái hiện tại, build production đã thành công; typecheck còn một lỗi server trong `server/sources/nowcoder.ts` và một lỗi frontend độc lập trong `src/components/common/toast.tsx`. Chi tiết nguyên nhân và cách sửa được ghi ở mục [TypeScript diagnostics](#typescript-diagnostics).
+
+### Commit và push thay đổi lên GitHub
+
+Trước khi commit, kiểm tra đúng các tệp thay đổi:
+
+```sh
+git status
+git diff --check
+git diff --stat
+git diff
+```
+
+Tạo commit cho bản Việt hóa:
+
+```sh
+git add index.html shared/metadata.ts shared/utils.ts src/components
+git add src/hooks/usePWA.ts src/hooks/useRefetch.ts src/hooks/useSync.ts README.md
+git commit -m "feat: localize NewsNow UI to Vietnamese"
+```
+
+Nếu nhánh local đang theo dõi `origin/main`, push bằng:
+
+```sh
+git push origin main
+```
+
+Khuyến nghị an toàn hơn là tạo nhánh riêng và mở Pull Request:
+
+```sh
+git switch -c feat/vietnamese-ui
+git push -u origin feat/vietnamese-ui
+```
+
+Không dùng `git push --force` trên `main` trừ khi đã xác nhận rõ với người quản lý repository. Nếu GitHub yêu cầu xác thực, hãy dùng SSH remote hoặc GitHub CLI (`gh auth login`) trước khi push.
+
+## TypeScript diagnostics
+
+### Lỗi server: `server/sources/nowcoder.ts:12`
+
+`defineSource` yêu cầu callback trả về `Promise<NewsItem[]>`. Trong callback hiện tại, `let url, id` khiến TypeScript suy luận cả hai biến có thể là `undefined`; vì vậy object trả về có kiểu `id: string | undefined` và `url: string | undefined`, không đáp ứng `NewsItem`, trong đó `id` và `url` đều bắt buộc.
+
+Lỗi này xuất hiện ở nhánh `tsconfig.node.json`, không nằm trong các tệp Việt hóa và không phải lỗi do thiếu declaration của Nitro. Có thể sửa bằng cách lọc các loại không được hỗ trợ hoặc khởi tạo kết quả với kiểu rõ ràng. Ví dụ an toàn hơn:
+
+```ts
+return res.data.result.flatMap((item) => {
+  if (item.type === 74) {
+    return [{
+      id: item.uuid,
+      title: item.title,
+      url: `https://www.nowcoder.com/feed/main/detail/${item.uuid}`,
+    }]
+  }
+  if (item.type === 0) {
+    return [{
+      id: item.id,
+      title: item.title,
+      url: `https://www.nowcoder.com/discuss/${item.id}`,
+    }]
+  }
+  return []
+})
+```
+
+Cách này loại bỏ các phần tử không có URL/ID thay vì phát sinh `undefined`, đồng thời giữ đúng hợp đồng `NewsItem[]`.
+
+### Lỗi frontend: `src/components/common/toast.tsx:48`
+
+`useRef<Timer>()` bị TypeScript báo `TS2554: Expected 1 arguments, but got 0` do phiên bản React type hiện tại yêu cầu đối số khởi tạo cho overload này. Đây là lỗi frontend độc lập, không thuộc server/generated types. Sửa tối thiểu:
+
+```ts
+const timer = useRef<Timer | undefined>(undefined)
+```
+
+### Vai trò của generated types
+
+`tsconfig.node.json` bao gồm `dist/.nitro/types`, vì vậy các declaration được Nitro sinh sau bước build được nạp vào quá trình kiểm tra server. Build hiện tạo được các global như `defineSource`, `myFetch` và `delay`; do đó lỗi `nowcoder.ts` là lỗi tương thích dữ liệu trả về với `NewsItem`, không phải lỗi generated types bị thiếu. Khi chẩn đoán, chạy riêng từng cấu hình để tránh lỗi ở bước đầu che khuất lỗi ở bước sau:
+
+```sh
+pnpm exec tsc --noEmit -p tsconfig.node.json
+pnpm exec tsc --noEmit -p tsconfig.app.json
+```
+
+### Trạng thái xác nhận
+
+`pnpm build` đã hoàn tất thành công. `git diff --check` không phát hiện whitespace error. `pnpm typecheck` chưa đạt hoàn toàn cho đến khi xử lý hai lỗi nêu trên; bản Việt hóa không làm thay đổi `server/sources/nowcoder.ts`.
+
 **_Elegant reading of real-time and hottest news_**
 
 ## Features
